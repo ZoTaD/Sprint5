@@ -99,4 +99,4 @@ class Black(Cliente):
 
 a = Gold("12", "12.05", "100", "5", "2000", "Corrientes", "1270", "CABA", "Buenos Aires", "Argentina", "Pedro", "Rodriguez", "2235", "22065213", 1, 1)
 a.out_dir()
-print(a.limite_extraccion_diario, a.costo_transferencias, a.limite_transferencia_recibida, a.__class__.__name__, a.cheq(), a.tarcred())
+print(a.limite_extraccion_diario, a.costo_transferencias, a.limite_transferencia_recibida, a.__class__.__name__, a.tarcred(), a.cheq(),)
