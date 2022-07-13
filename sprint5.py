@@ -1,18 +1,21 @@
+from cmath import inf
 from decimal import Decimal
 import json
+from msilib.schema import Property
+
 
 def salir(m):
     print(m)
     exit()
 
 class Cuenta:
-    def __init__(self, lime, limtr, mto, cost, sldd, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.limite_extraccion_diario = Decimal(lime)
-        self.limite_transferencia_recibida = Decimal(limtr)
-        self.monto = Decimal(mto)
-        self.costo_transferencias = Decimal(cost)
-        self.saldo_descubierto_disponible = Decimal(sldd)
+        self.limite_extraccion_diario = None
+        self.limite_transferencia_recibida = None
+        self.monto = None
+        self.costo_transferencias = None
+        self.saldo_descubierto_disponible = None
 
 class Direccion:
     def __init__(self, calle, num, ciudad, prov, pais, **kwargs):
@@ -26,63 +29,120 @@ class Direccion:
         print(f"Dirección: {self.pais}, {self.provincia}, {self.ciudad}, {self.calle}, {self.numero}")
 
 class Cliente(Cuenta, Direccion):
-    def __init__(self, lime, limtr, mto, cost, sldd, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni, **kwargs):
-        super().__init__(lime = lime, limtr = limtr, mto = mto, cost = cost, sldd = sldd, calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, **kwargs)
+    def __init__(self, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni, **kwargs):
+        super().__init__(calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, **kwargs)
         self.nombre = nombre
         self.apellido = apellido
         self.numero_cliente= numc
         self.dni = dni
 
 class Classic(Cliente):
-    def __init__(self, lime, limtr, mto, cost, sldd, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni, curtarcred, curcheq):
-        super().__init__(lime = lime, limtr = limtr, mto = mto, cost = cost, sldd = sldd, calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
-        if curtarcred != 0:
+    def __init__(self, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni):
+        super().__init__(calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
+        self.limite_extraccion_diario = Decimal("10000")
+        self.limite_transferencia_recibida = Decimal("150000")
+        self.costo_transferencias = Decimal("0.01")
+        self.saldo_descubierto_disponible = Decimal("0")
+    
+    @property
+    def curtarcred(self):
+        return self._curtarcred
+    @curtarcred.setter
+    def curtarcred(self, ctc):
+        if ctc != 0:
             salir("Error de cuenta: cantidad de tarjetas de crédito imposible")
-        else: self.curtarcred = curtarcred    
-        if curcheq != 0:
+        else:
+            self._curtarcred = ctc 
+
+    @property
+    def curcheq(self):
+            return self._curcheq
+    @curcheq.setter
+    def curcheq(self, crc):
+        if crc != 0:
             salir("Error de cuenta: cantidad de chequeras imposible")
         else:
-            self.curcheq = curcheq
+            self._curcheq = crc
+
     def cheq(self):
         return False
+
     def tarcred(self):
         return False
+
     def dolar(self):
         return False
 
 class Gold(Cliente):
-    def __init__(self, lime, limtr, mto, cost, sldd, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni, curtarcred, curcheq):
-        super().__init__(lime = lime, limtr = limtr, mto = mto, cost = cost, sldd = sldd, calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
-        if curtarcred < 0 or curtarcred > 1:
+    def __init__(self, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni):
+        super().__init__(calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
+        self.limite_extraccion_diario = Decimal("20000")
+        self.limite_transferencia_recibida = Decimal("500000")
+        self.costo_transferencias = Decimal("0.005")
+        self.saldo_descubierto_disponible = Decimal("10000")
+
+    @property
+    def curtarcred(self):
+        return self._curtarcred
+    @curtarcred.setter
+    def curtarcred(self, ctc):
+        if ctc < 0 or ctc > 1:
             salir("Error de cuenta: cantidad de tarjetas de crédito imposible")
-        else: self.curtarcred = curtarcred    
-        if curcheq < 0 or curcheq > 1:
+        else:
+            self._curtarcred = ctc 
+
+    @property
+    def curcheq(self):
+            return self._curcheq
+    @curcheq.setter
+    def curcheq(self, crc):
+        if crc < 0 or crc > 1:
             salir("Error de cuenta: cantidad de chequeras imposible")
         else:
-            self.curcheq = curcheq
+            self._curcheq = crc
+
     def cheq(self):
         if self.curcheq == 1:
             return False
         else:
             return True
+
     def tarcred(self):
         if self.curtarcred == 1:
             return False
         else:
             return True
+
     def dolar():
         return True
 
 class Black(Cliente):
-    def __init__(self, lime, limtr, mto, cost, sldd, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni, curtarcred, curcheq):
-        super().__init__(lime = lime, limtr = limtr, mto = mto, cost = cost, sldd = sldd, calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
-        if curtarcred < 0 or curtarcred > 5:
+    def __init__(self, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni):
+        super().__init__(calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
+        self.limite_extraccion_diario = Decimal("100000")
+        self.costo_transferencias = Decimal("0")
+        self.saldo_descubierto_disponible = Decimal("10000")
+
+    @property
+    def curtarcred(self):
+        return self._curtarcred
+    @curtarcred.setter
+    def curtarcred(self, ctc):
+        if ctc < 0 or ctc > 5:
             salir("Error de cuenta: cantidad de tarjetas de crédito imposible")
-        else: self.curtarcred = curtarcred    
-        if curcheq < 0 or curcheq > 2:
+        else:
+            self._curtarcred = ctc 
+
+    @property
+    def curcheq(self):
+            return self._curcheq
+    @curcheq.setter
+    def curcheq(self, crc):
+        if crc < 0 or crc > 2:
             salir("Error de cuenta: cantidad de chequeras imposible")
         else:
-            self.curcheq = curcheq
+            self._curcheq = crc
+
     def cheq(self):
         if self.curcheq == 2:
             return False
@@ -123,20 +183,40 @@ class DecAltaChequera(Decline):
             if not self.cliente.cheq():
                 print("Transacción rechazada debido a que la cantidad de chequeras permitidas para esta cuenta ha sido alcanzada (las cuentas Black únicamente pueden tener hasta dos chequeras)")
 
-a = Classic("12", "12.05", "100", "5", "2000", "Corrientes", "1270", "CABA", "Buenos Aires", "Argentina", "Pedro", "Rodriguez", "2235", "22065213", 0, 0)
-a.out_dir()
-print(a.limite_extraccion_diario, a.costo_transferencias, a.limite_transferencia_recibida, a.__class__.__name__, a.tarcred(), a.cheq())
 print("")
 
 arc = open("./test.json")
+
 arcparse = json.load(arc)
-trantype = []
+
+rejectedt = {}
+
+if arcparse["tipo"] == "CLASSIC":
+    c = Classic(None, None, None, None, None, arcparse["nombre"], arcparse["apellido"], arcparse["numero"], arcparse["DNI"])
+elif arcparse["tipo"] == "GOLD":
+    c = Gold(None, None, None, None, None, arcparse["nombre"], arcparse["apellido"], arcparse["numero"], arcparse["DNI"])
+elif arcparse["tipo"] == "BLACK":
+    c = Black(None, None, None, None, None, arcparse["nombre"], arcparse["apellido"], arcparse["numero"], arcparse["DNI"])
+
 for i in arcparse["transacciones"]:
     if i["estado"] == "RECHAZADA":
-        trantype.append((i["numero"], i["tipo"]))
-print(trantype)
-arc.close()
-print("")
+        c.monto = i["saldoEnCuenta"]
 
-rec = DecAltaChequera("ALTA_CHEQUERA", 190, 3000, 9000, "10/10/2022 16:00:55", 2, 100000, a)
-rec.solve()
+        c.curtarcred = i["totalTarjetasDeCreditoActualmente"]
+        print(c.curtarcred, "tarjetas de crédito")
+
+        c.curcheq = i["totalChequerasActualmente"]
+        print(c.curcheq, "chequeras")
+        
+        trnum = i["numero"]
+
+        if i["tipo"] == "ALTA_CHEQUERA":
+            rejectedt[f"tr {trnum}"] = DecAltaChequera(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+    else:
+        print("La transacción", i["numero"], "se encuentra aceptada")
+
+arc.close()
+
+print("")
