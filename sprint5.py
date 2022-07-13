@@ -1,8 +1,5 @@
-from cmath import inf
 from decimal import Decimal
 import json
-from msilib.schema import Property
-
 
 def salir(m):
     print(m)
