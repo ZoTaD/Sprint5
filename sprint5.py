@@ -110,13 +110,14 @@ class Gold(Cliente):
         else:
             return True
 
-    def dolar():
+    def dolar(self):
         return True
 
 class Black(Cliente):
     def __init__(self, calle, num, ciudad, prov, pais, nombre, apellido, numc, dni):
         super().__init__(calle = calle, num = num, ciudad = ciudad, prov = prov, pais = pais, nombre = nombre, apellido = apellido, numc = numc, dni = dni)
         self.limite_extraccion_diario = Decimal("100000")
+        self.limite_transferencia_recibida = None
         self.costo_transferencias = Decimal("0")
         self.saldo_descubierto_disponible = Decimal("10000")
 
@@ -150,18 +151,18 @@ class Black(Cliente):
             return False
         else:
             return True
-    def dolar():
+    def dolar(self):
         return True
 
 class Decline:
     def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
         self.t = tipo
         self.cn = cuenta
-        self.remaining = cupor
-        self.m = monto
+        self.remaining = Decimal(cupor)
+        self.m = Decimal(monto)
         self.date = date
         self.tnum = num
-        self.s = saldo
+        self.s = Decimal(saldo)
         self.cliente = cliente
     def solve(self):
         print("Debe crearse un objeto del tipo de rechazo adecuado para poder utilizarse este método")
@@ -179,6 +180,54 @@ class DecAltaChequera(Decline):
         elif self.cliente.__class__.__name__ == "Black":
             if not self.cliente.cheq():
                 print("Transacción rechazada debido a que la cantidad de chequeras permitidas para esta cuenta ha sido alcanzada (las cuentas Black únicamente pueden tener hasta dos chequeras)")
+
+class DecAltaTarcred(Decline):
+    def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
+        super().__init__(tipo, cuenta, cupor, monto, date, num, saldo, cliente)
+    def solve(self):
+        if self.cliente.__class__.__name__ == "Classic":
+            if not self.cliente.tarcred():
+                print("Transacción rechazada debido a que a cantidad de tarjetas de crédito permitidas para esta cuenta ha sido alcanzada (las cuentas Classic no pueden tener tarjetas de crédito)")
+        elif self.cliente.__class__.__name__ == "Gold":
+            if not self.cliente.tarcred():
+                print("Transacción rechazada debido a que la cantidad de tarjetas de crédito permitidas para esta cuenta ha sido alcanzada (las cuentas Gold únicamente pueden tener una tarjeta de crédito)")
+        elif self.cliente.__class__.__name__ == "Black":
+            if not self.cliente.tarcred():
+                print("Transacción rechazada debido a que la cantidad de tarjetas de crédito permitidas para esta cuenta ha sido alcanzada (las cuentas Black únicamente pueden tener hasta cinco tarjetas de crédito)")
+
+class DecDolar(Decline):
+    def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
+        super().__init__(tipo, cuenta, cupor, monto, date, num, saldo, cliente)
+    def solve(self):
+        if not self.cliente.dolar():
+            print("Transacción rechazada debido a que las cuentas classic no pueden comprar dólares")
+        else:
+            if self.m > self.s:
+                print("Transacción rechazada por monto mayor a saldo en cuenta")
+
+class DecRetEfec(Decline):
+    def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
+        super().__init__(tipo, cuenta, cupor, monto, date, num, saldo, cliente)
+    def solve(self):
+        if (self.s + self.cliente.saldo_descubierto_disponible) < self.m:  
+            print("Transacción rechazada por monto mayor a saldo en cuenta")
+        elif self.m > self.remaining:
+            print("Transacción rechazada por monto mayor a límite de extracción diario")    
+
+class DecTranfRec(Decline):
+    def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
+        super().__init__(tipo, cuenta, cupor, monto, date, num, saldo, cliente)
+    def solve(self):
+        if self.cliente.limite_transferencia_recibida:
+            if self.cliente.limite_transferencia_recibida <= self.m:
+                print("Transacción rechazada debido a que el monto es mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__)
+
+class DecTranfEnv(Decline):
+    def __init__(self, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
+        super().__init__(tipo, cuenta, cupor, monto, date, num, saldo, cliente)
+    def solve(self):
+        if (self.m + self.m * self.cliente.costo_transferencias) > (self.s + self.cliente.saldo_descubierto_disponible):
+            print("Transacción rechazada debido a que el monto y la comisión (de aplicarse) son mayores al saldo en cuenta (incluyendo descubierto en caso de tenerse)")
 
 print("")
 
@@ -211,6 +260,32 @@ for i in arcparse["transacciones"]:
             rejectedt[f"tr {trnum}"] = DecAltaChequera(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
             print("transacción", rejectedt[f"tr {trnum}"].tnum)
             rejectedt[f"tr {trnum}"].solve()
+            print("-------")
+        elif i["tipo"] == "RETIRO_EFECTIVO_CAJERO_AUTOMATICO":
+            rejectedt[f"tr {trnum}"] = DecRetEfec(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+            print("-------")
+        elif i["tipo"] == "ALTA_TARJETA_CREDITO":
+            rejectedt[f"tr {trnum}"] = DecAltaTarcred(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+            print("-------")
+        elif i["tipo"] == "COMPRAR_DOLAR":
+            rejectedt[f"tr {trnum}"] = DecDolar(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+            print("-------")
+        elif i["tipo"] == "TRANSFERENCIA_RECIBIDA":
+            rejectedt[f"tr {trnum}"] = DecTranfRec(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+            print("-------")
+        elif i["tipo"] == "TRANSFERENCIA_ENVIADA":
+            rejectedt[f"tr {trnum}"] = DecTranfEnv(i["tipo"], i["cuentaNumero"], i["cupoDiarioRestante"], i["monto"], i["fecha"], i["numero"], i["saldoEnCuenta"], c)
+            print("transacción", rejectedt[f"tr {trnum}"].tnum)
+            rejectedt[f"tr {trnum}"].solve()
+            print("-------")
     else:
         print("La transacción", i["numero"], "se encuentra aceptada")
 
