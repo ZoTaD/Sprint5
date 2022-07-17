@@ -1,6 +1,4 @@
 import json, cuentas, rechazos, sys, codecs
-from simple_html.nodes import body, head, html, p, tr, td, tbody, th
-from simple_html.render import render
 
 print("")
 
@@ -70,24 +68,11 @@ clientname=f"<h1>Transacciones de: {nombre} {apellido}</h1>"
 htmllines=""
 
 for i in rejectedt.values():
-    node = tr(
-    th.attrs(scope="row")(
-        f"{i.tnum}"
-    ),
-    td(
-        f"{i.state}"
-    ),
-    td(
-        f"{i.date}"
-    ),
-    td(
-        f"{i.t}"
-    ),
-    td(
-        f"{i.solve()}"
-    )
-    )
-    htmllines += f"              {render(node)}\n"
+    ttype = ""
+    for w in i.t.split("_"):
+        ttype+=f"{w} "
+    e = f'              <tr><th scope="row">{i.tnum}</th><td>{ttype}</td><td>{i.date}</td><td>{i.state}</td><td>{i.solve()}</td></tr>\n'  
+    htmllines += e
 
 tablatemp = codecs.open("./files/template.html", "r", "utf-8")
 filelines = tablatemp.readlines()

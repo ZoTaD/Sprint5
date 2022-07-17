@@ -17,33 +17,33 @@ class Decline:
 
 class DecAltaChequera(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if not self.cliente.cheq():
             print("Transacción rechazada debido a que la cantidad de chequeras permitidas para esta cuenta ha sido alcanzada")
-            return "La cantidad de chequeras permitidas para esta cuenta ha sido alcanzada"
+            return "Cantidad máxima de chequeras permitidas alcanzada"
         else:
                 print("Transacción aceptada")
                 return "Transacción aceptada"
 
 class DecAltaTarcred(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if not self.cliente.tarcred():
             print("Transacción rechazada debido a que a cantidad de tarjetas de crédito permitidas para esta cuenta ha sido alcanzada")
-            return "La cantidad de tarjetas de crédito permitidas para esta cuenta ha sido alcanzada"
+            return "Cantidad máxima de tarjetas de crédito permitidas alcanzada"
         else:
                 print("Transacción aceptada")
                 return "Transacción aceptada"
 
 class DecDolar(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if not self.cliente.dolar():
             print("Transacción rechazada debido a que las cuentas classic no pueden comprar dólares")
-            return "Cuentas classic no pueden comprar dólares"
+            return "Las cuentas classic no pueden comprar dólares"
         else:
             if self.m > self.s:
                 print("Transacción rechazada por monto mayor a saldo en cuenta")
@@ -55,26 +55,26 @@ class DecDolar(Decline):
 
 class DecRetEfec(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if (self.s + self.cliente.account.saldo_descubierto_disponible) < self.m:  
             print("Transacción rechazada por monto mayor a saldo en cuenta")
             return "Monto mayor a saldo en cuenta"
         elif self.m > self.remaining:
             print("Transacción rechazada por monto mayor a límite de extracción diario")
-            return "Monto mayor a límite de extracción diario"
+            return "Monto mayor a límite de extracción diario restante"
         else:
             print("Transacción aceptada")
             return "Transacción aceptada"
 
 class DecTranfRec(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if self.cliente.account.limite_transferencia_recibida:
             if self.cliente.account.limite_transferencia_recibida <= self.m:
                 print("Transacción rechazada debido a que el monto es mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__)
-                return "Monto es mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__
+                return "Monto mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__
             else:
                 print("Transacción aceptada")
                 return "Transacción aceptada"
@@ -84,11 +84,11 @@ class DecTranfRec(Decline):
 
 class DecTranfEnv(Decline):
     def __init__(self, estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente):
-        super().__init__(tipo, estado, cuenta, cupor, monto, date, num, saldo, cliente)
+        super().__init__(estado, tipo, cuenta, cupor, monto, date, num, saldo, cliente)
     def solve(self):
         if (self.m + self.m * self.cliente.account.costo_transferencias) > (self.s + self.cliente.account.saldo_descubierto_disponible):
             print("Transacción rechazada debido a que el monto y la comisión (de aplicarse) son mayores al saldo en cuenta (incluyendo descubierto en caso de tenerse)")
-            return "Monto y la comisión (de aplicarse) son mayores al saldo en cuenta (incluyendo descubierto en caso de tenerse)"
+            return "Monto y comisión (de aplicarse) mayores al saldo en cuenta (incluye descubierto si se tiene)"
         else:
             print("Transacción aceptada")
             return "Transacción aceptada"
