@@ -74,7 +74,7 @@ class DecTranfRec(Decline):
         if self.cliente.account.limite_transferencia_recibida:
             if self.cliente.account.limite_transferencia_recibida <= self.m:
                 print("Transacción rechazada debido a que el monto es mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__)
-                return "Monto mayor al límite de transferencias recibidas para las cuentas de tipo", self.cliente.__class__.__name__
+                return f"Monto mayor al límite de transferencias recibidas para las cuentas de tipo {self.cliente.__class__.__name__}"
             else:
                 print("Transacción aceptada")
                 return "Transacción aceptada"
