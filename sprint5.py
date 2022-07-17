@@ -75,13 +75,13 @@ for i in rejectedt.values():
         f"{i.tnum}"
     ),
     td(
-        f"{i.t}"
+        f"{i.state}"
     ),
     td(
         f"{i.date}"
     ),
     td(
-        f"{i.state}"
+        f"{i.t}"
     ),
     td(
         f"{i.solve()}"
