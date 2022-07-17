@@ -71,7 +71,7 @@ for i in rejectedt.values():
     ttype = ""
     for w in i.t.split("_"):
         ttype+=f"{w} "
-    e = f'              <tr><th scope="row">{i.tnum}</th><td>{ttype}</td><td>{i.date}</td><td>{i.state}</td><td>{i.solve()}</td></tr>\n'  
+    e = f'              <tr><th scope="row">{i.tnum}</th><td>{ttype.capitalize()}</td><td>{i.date}</td><td>{i.state.capitalize()}</td><td>{i.solve()}</td></tr>\n'  
     htmllines += e
 
 tablatemp = codecs.open("./files/template.html", "r", "utf-8")
