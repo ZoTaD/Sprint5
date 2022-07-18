@@ -31,12 +31,16 @@ if keep:
         keep = False
 
 if keep:
-    if arcparse["tipo"] == "CLASSIC":
-        c = cuentas.Classic(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
-    elif arcparse["tipo"] == "GOLD":
-        c = cuentas.Gold(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
-    elif arcparse["tipo"] == "BLACK":
-        c = cuentas.Black(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
+    try:
+        if arcparse["tipo"] == "CLASSIC":
+            c = cuentas.Classic(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
+        elif arcparse["tipo"] == "GOLD":
+            c = cuentas.Gold(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
+        elif arcparse["tipo"] == "BLACK":
+            c = cuentas.Black(nombre, apellido, numeroc, dni, cuentas.Cuenta(), direccion)
+    except:
+        err += "Error de lectura de los datos del cliente"
+        keep = False
 
 if keep:
     for i in transacciones:
@@ -87,8 +91,9 @@ try:
         filelines[23] = htmllines
         print(err)
     else:
+        filelines[10] ='<h1 class"text-center titleformat text-light">Error</h1>\n'
         filelines[23] = f'            <tr><th scope="row">*</th><td>{err}</td>\n'
-    tabla = codecs.open("prueba.html", "w", "utf-8")
+    tabla = codecs.open("reporte.html", "w", "utf-8")
     tabla.writelines(filelines)
     tabla.close()
 except:
