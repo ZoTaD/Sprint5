@@ -1,0 +1,15 @@
+body {
+    background-color: rgb(189, 204, 246);
+}
+.padtable {
+    padding-left: 2em;
+    padding-right: 2em;
+}
+.tablef {
+    border-radius: 6px;
+    background-color: rgba(15, 10, 101, 0.5);
+}
+.titleformat {
+    background-color: rgb(15, 10, 101);
+    padding-bottom: .25em;
+}

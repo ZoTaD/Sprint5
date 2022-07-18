@@ -80,7 +80,6 @@ class Gold(Cliente):
         self.account.limite_transferencia_recibida = Decimal("500000")
         self.account.costo_transferencias = Decimal("0.005")
         self.account.saldo_descubierto_disponible = Decimal("10000")
-        
 
     @property
     def curtarcred(self):
@@ -127,7 +126,6 @@ class Black(Cliente):
         self.account.costo_transferencias = Decimal("0")
         self.account.saldo_descubierto_disponible = Decimal("10000")
         
-
     @property
     def curtarcred(self):
         return self._curtarcred
