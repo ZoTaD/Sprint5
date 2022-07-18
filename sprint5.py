@@ -4,6 +4,10 @@ filename = str(sys.argv[1])
 err = ""
 keep = True
 
+if len(sys.argv) != 1:
+    err+= "Cantidad de argumentos inadecuada al llamar al script"
+    keep = False
+
 try:
     arc = open("./files/" + filename)
 except:
@@ -91,9 +95,9 @@ try:
         filelines[23] = htmllines
         print(err)
     else:
-        filelines[10] ='<h1 class"text-center titleformat text-light">Error</h1>\n'
+        filelines[10] ='<h1 class="text-center titleformat text-light">Error</h1>\n'
         filelines[23] = f'            <tr><th scope="row">*</th><td>{err}</td>\n'
-    tabla = codecs.open("reporte.html", "w", "utf-8")
+    tabla = codecs.open("./output/reporte.html", "w", "utf-8")
     tabla.writelines(filelines)
     tabla.close()
 except:

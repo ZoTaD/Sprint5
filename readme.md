@@ -1,0 +1,1 @@
+Para poder llamar al script ("sprint5.py") debemos pasarle como único argumento el nombre de un archivo JSON (incluyendo la extensión) que debe encontrarse dentro de la carpeta llamada "files". Dentro de la carpeta res podemos encontrar un archivo HTML y un archivo CSS que funcionan como plantillas para la creación del reporte, que se ubicará dentro de la carpeta output.
