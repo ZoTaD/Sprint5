@@ -4,7 +4,7 @@ filename = str(sys.argv[1])
 err = ""
 keep = True
 
-if len(sys.argv) != 1:
+if len(sys.argv) != 2:
     err+= "Cantidad de argumentos inadecuada al llamar al script"
     keep = False
 
