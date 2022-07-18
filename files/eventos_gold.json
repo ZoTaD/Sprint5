@@ -97,7 +97,7 @@
 			"totalChequerasActualmente" : 1
 		},
 		{
-			"estado": "RECHAZADA",
+			"estado": "ACEPTADA",
 			"tipo": "TRANSFERENCIA_ENVIADA",
 			"cuentaNumero": 190,
 			"cupoDiarioRestante": 3000,
